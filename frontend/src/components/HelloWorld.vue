@@ -1,0 +1,49 @@
+<template>
+  <el-form ref="form" :model="form" label-width="120px">
+    <el-form-item label="username">
+      <el-input v-model="form.username"></el-input>
+    </el-form-item>
+    <el-form-item label="password">
+      <el-input v-model="form.password"></el-input>
+    </el-form-item>
+
+    <el-form-item>
+      <el-button type="primary" @click="onSubmit">Login</el-button>
+      <el-button>Cancel</el-button>
+    </el-form-item>
+
+    <div>{{status}}</div>
+  </el-form>
+</template>
+
+<script>
+  import Vue from 'vue'
+
+  export default {
+    data() {
+      return {
+        status: '',
+        form: {
+          username: '',
+          password: '',
+        }
+      }
+    },
+    methods: {
+      onSubmit() {
+        Vue.http.post('/auth/login', {username: this.form.username, password: this.form.password})
+          .then((res) => {
+            if(res.body === 'login success'){
+              this.status = 'login success';
+              localStorage.setItem('userid', this.form.username);
+              this.$router.replace('/rooms');
+            }
+            else {
+              this.status = res.body;
+            }
+          });
+
+      }
+    }
+  }
+</script>
