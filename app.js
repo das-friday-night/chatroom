@@ -22,6 +22,10 @@ app.use(session({
 
 mongoose.connect('mongodb://user:user@ds113046.mlab.com:13046/chatroom/');
 
+// view engine setup
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'pug');
+
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -58,7 +62,7 @@ app.use(function(err, req, res, next) {
 
 
   res.status(err.status || 500);
-  // todo: render the error page
+  res.render('error');
 });
 
 module.exports = app;
