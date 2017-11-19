@@ -177,9 +177,6 @@ var leaveRoom = function (roomid, userid) {
     return leaveUserJoinRoom(roomid, userid)
         .then(roomid => leaveChatRoom(roomid, userid))
         .catch(err => err);
-    // return leaveChatRoom(roomid, userid)
-    //     .then(roomid => leaveUserJoinRoom(roomid, userid))
-    //     .catch(err => err);
 };
 
 var logMessage = function (roomid, userid, message) {

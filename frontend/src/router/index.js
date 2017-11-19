@@ -15,17 +15,30 @@ export default new Router({
     {
       path: '/',
       name: 'HelloWorld',
-      component: HelloWorld
+      component: HelloWorld,
+      beforeEnter: (to, from, next) => {
+        if(localStorage.getItem('userid')) next('/rooms');
+        else next();
+      }
     },
     {
       path: '/chat',
       name: 'ChatPanel',
-      component: ChatPanel
+      component: ChatPanel,
+      beforeEnter: (to, from, next) => {
+        if(!localStorage.getItem('userid')) next('/');
+        if(!localStorage.getItem('current_room')) next('/rooms');
+        else next();
+      }
     },
     {
       path: '/rooms',
       name: Rooms,
-      component: Rooms
+      component: Rooms,
+      beforeEnter: (to, from, next) => {
+        if(!localStorage.getItem('userid')) next('/');
+        else next();
+      }
     }
   ]
 })

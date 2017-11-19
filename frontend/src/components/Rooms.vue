@@ -4,7 +4,7 @@
       <el-aside width="200px">
         <el-form ref="form">
           <el-form-item label="new room name: ">
-            <el-input v-model="new_room"></el-input>
+            <el-input v-model="new_room_name"></el-input>
           </el-form-item>
 
           <el-form-item>
@@ -15,9 +15,22 @@
 
       <el-main>
         <el-col v-for="room in all_rooms" :key="room">
-          <el-button type="primary" v-on:click="enter(room)">{{room}}</el-button>
-          <el-button type="danger" v-if="my_rooms.indexOf(room) !== -1" v-on:click="leave(room)" round>Leave Room</el-button>
-          <el-button type="success" v-else v-on:click="join(room)" round>Join Room</el-button>
+          <el-button
+            type="primary"
+            v-on:click="enter(room)"
+            v-bind:disabled="my_rooms.indexOf(room) === -1">{{room}}</el-button>
+
+          <el-button
+            type="danger"
+            v-if="my_rooms.indexOf(room) !== -1"
+            v-on:click="leave(room)"
+            round>Leave Room</el-button>
+
+          <el-button
+            type="success"
+            v-else
+            v-on:click="join(room)"
+            round>Join Room</el-button>
         </el-col>
       </el-main>
     </el-container>
@@ -31,10 +44,9 @@
   export default {
     data () {
       return {
-//        my_rooms: new Set(),
         my_rooms: [],
         all_rooms: [],
-        new_room: '',
+        new_room_name: '',
         status: ''
       }
     },
@@ -56,6 +68,7 @@
           }
         })
     },
+
     methods: {
       enter(roomid) {
         localStorage.setItem('current_room',roomid);
@@ -72,6 +85,9 @@
                 index = this.my_rooms.indexOf(roomid);
                 this.all_rooms.splice(index,1);
               }
+              if(localStorage.getItem('current_room') === roomid){
+                localStorage.removeItem('current_room');
+              }
             }
             else {
               this.status = 'leave room failed';
@@ -84,11 +100,10 @@
           .then((res) => {
             if(res.body.roomid){
               this.my_rooms.push(res.body.roomid);
-              this.all_rooms.push(res.body.roomid);
               localStorage.setItem('joined_rooms', this.my_rooms);
             }
             else {
-              this.status = 'enter new room failed';
+              this.status = 'join new room failed';
             }
           })
       },
@@ -105,8 +120,7 @@
               this.status = 'enter new room failed';
             }
           });
-
-      }
+      },
     }
   }
 </script>

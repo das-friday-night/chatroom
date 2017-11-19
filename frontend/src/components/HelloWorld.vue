@@ -1,19 +1,24 @@
 <template>
-  <el-form ref="form" :model="form" label-width="120px">
-    <el-form-item label="username">
-      <el-input v-model="form.username"></el-input>
-    </el-form-item>
-    <el-form-item label="password">
-      <el-input v-model="form.password"></el-input>
-    </el-form-item>
+  <el-row style="margin-top: 7%;">
+    <el-col :span="8" :offset="7">
+      <el-form ref="form" :model="form" label-width="120px">
+        <el-form-item label="username">
+          <el-input v-model="form.username"></el-input>
+        </el-form-item>
+        <el-form-item label="password">
+          <el-input v-model="form.password"></el-input>
+        </el-form-item>
 
-    <el-form-item>
-      <el-button type="primary" @click="onSubmit">Login</el-button>
-      <el-button>Cancel</el-button>
-    </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="onSubmit">Login</el-button>
+          <el-button>Cancel</el-button>
+        </el-form-item>
 
-    <div>{{status}}</div>
-  </el-form>
+        <div>{{status}}</div>
+      </el-form>
+    </el-col>
+  </el-row>
+
 </template>
 
 <script>
