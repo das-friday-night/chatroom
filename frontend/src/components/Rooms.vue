@@ -66,8 +66,12 @@
         Vue.http.post('/v1/room', {action: 'leave', roomid: roomid, userid: localStorage.getItem('userid')})
           .then(res => {
             if(res.body.roomid){
-              var index = this.my_rooms.indexOf(res.body.roomid);
-              this.my_rooms.splice(index,1);
+              var index = this.all_rooms.indexOf(roomid);
+              this.all_rooms.splice(index,1);
+              if(res.body.roomid === 'room deleted'){
+                index = this.my_rooms.indexOf(roomid);
+                this.all_rooms.splice(index,1);
+              }
             }
             else {
               this.status = 'leave room failed';

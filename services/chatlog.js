@@ -138,7 +138,7 @@ var leaveChatRoom = function (roomid, userid) {
              * null if the query does not match a document;
              */
             if(room && room.users.indexOf(userid) !== -1){
-                if(room.users.length === 1) return Chatlog.deleteOne({_id: roomid}).then(()=>roomid);
+                if(room.users.length === 1) return Chatlog.deleteOne({_id: roomid}).then(()=>'room deleted');
                 else return roomid;
             }
             else {
@@ -162,7 +162,6 @@ var leaveUserJoinRoom = function (roomid, userid) {
         values: [roomid, userid]
     })
     .then(() => {
-        console.log(1);
         return roomid;
     })
     .catch(err => {
@@ -175,9 +174,12 @@ var leaveRoom = function (roomid, userid) {
     if(typeof roomid !== 'string' || typeof userid !== 'string'){
         return Promise.reject(new Error('wrong roomid or userid'));
     }
-    return leaveChatRoom(roomid, userid)
-        .then(roomid => leaveUserJoinRoom(roomid, userid))
+    return leaveUserJoinRoom(roomid, userid)
+        .then(roomid => leaveChatRoom(roomid, userid))
         .catch(err => err);
+    // return leaveChatRoom(roomid, userid)
+    //     .then(roomid => leaveUserJoinRoom(roomid, userid))
+    //     .catch(err => err);
 };
 
 var logMessage = function (roomid, userid, message) {
