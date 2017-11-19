@@ -14,10 +14,10 @@
       </el-aside>
 
       <el-main>
-        <el-col v-for="room in all_rooms" :key="room._id">
-          <el-button type="primary" v-on:click="enter(room._id)">{{room._id}}</el-button>
-          <el-button type="danger" v-if="my_rooms.has(room._id)" v-on:click="leave(room._id)" round>Leave Room</el-button>
-          <el-button type="success" v-else v-on:click="join(room._id)" round>Join Room</el-button>
+        <el-col v-for="room in all_rooms" :key="room">
+          <el-button type="primary" v-on:click="enter(room)">{{room}}</el-button>
+          <el-button type="danger" v-if="my_rooms.indexOf(room) !== -1" v-on:click="leave(room)" round>Leave Room</el-button>
+          <el-button type="success" v-else v-on:click="join(room)" round>Join Room</el-button>
         </el-col>
       </el-main>
     </el-container>
@@ -31,28 +31,29 @@
   export default {
     data () {
       return {
-        my_rooms: new Set(),
+//        my_rooms: new Set(),
+        my_rooms: [],
         all_rooms: [],
         new_room: '',
         status: ''
       }
     },
+
     mounted() {
+      localStorage.removeItem('current_room');
       Vue.http.get('/v1/user/'+localStorage.getItem('userid'))
         .then(res => {
           if(res.data) {
-            for(let i in res.data.join_rooms){
-              this.my_rooms.add(res.data.join_rooms[i]);
-            }
-            this.all_rooms = res.data.allrooms;
+            this.my_rooms = res.data.join_rooms;
+            this.all_rooms = res.data.allrooms.map(room => room._id);
             localStorage.setItem('joined_rooms', this.my_rooms);
           }
         })
         .catch(err => {
           if(localStorage.getItem('joined_rooms')){
             this.my_rooms = localStorage.getItem('joined_rooms');
+            console.log('load local');
           }
-          console.log('load local my_rooms');
         })
     },
     methods: {
@@ -65,7 +66,8 @@
         Vue.http.post('/v1/room', {action: 'leave', roomid: roomid, userid: localStorage.getItem('userid')})
           .then(res => {
             if(res.body.roomid){
-              this.my_rooms.delete(res.body.roomid);
+              var index = this.my_rooms.indexOf(res.body.roomid);
+              this.my_rooms.splice(index,1);
             }
             else {
               this.status = 'leave room failed';
@@ -77,9 +79,9 @@
         Vue.http.post('/v1/room', {action: 'enter', roomid: roomid, userid: localStorage.getItem('userid')})
           .then((res) => {
             if(res.body.roomid){
-              this.my_rooms.add(res.body.roomid);
-              localStorage.setItem('joined_rooms', this.my_rooms);
+              this.my_rooms.push(res.body.roomid);
               this.all_rooms.push(res.body.roomid);
+              localStorage.setItem('joined_rooms', this.my_rooms);
             }
             else {
               this.status = 'enter new room failed';
@@ -91,9 +93,9 @@
         Vue.http.post('/v1/room', {action: 'enter', roomid: null, userid: localStorage.getItem('userid')})
           .then((res) => {
             if(res.body.roomid){
-              this.my_rooms.add(res.body.roomid);
-              localStorage.setItem('joined_rooms', this.my_rooms);
+              this.my_rooms.push(res.body.roomid);
               this.all_rooms.push(res.body.roomid);
+              localStorage.setItem('joined_rooms', this.my_rooms);
             }
             else {
               this.status = 'enter new room failed';
