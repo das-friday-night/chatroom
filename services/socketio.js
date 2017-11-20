@@ -39,7 +39,7 @@ module.exports = function (server) {
             if(eventName === 'chat'){
                 rooms[socketIdToRoom[socket.id]]
                     .forEach(function(sid){
-                        io.to(sid).emit(eventName, {who: socketIdToUserId[socket.id], msg: msg});
+                        io.to(sid).emit(eventName, {u: socketIdToUserId[socket.id], m: msg});
                     })
             }
         }

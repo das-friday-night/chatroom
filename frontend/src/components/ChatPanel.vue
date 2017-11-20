@@ -14,8 +14,8 @@
 
 
     <el-table :data="msgs" style="width: 100%" :row-class-name="tableRowClassName">
-      <el-table-column prop="who" width="180"></el-table-column>
-      <el-table-column prop="msg"></el-table-column>
+      <el-table-column prop="u" width="180"></el-table-column>
+      <el-table-column prop="m"></el-table-column>
     </el-table>
 
     <el-row :gutter="20">
@@ -33,10 +33,14 @@
 
 <script>
   import socketio from 'socket.io-client'
-
+  import Vue from 'vue'
 
   export default {
     data() {
+//      var socket = socketio('http://localhost:8080', {
+//        query: {u: localStorage.getItem('userid'), r: localStorage.getItem('current_room')}
+//      });
+
       var socket = socketio({
         query: {u: localStorage.getItem('userid'), r: localStorage.getItem('current_room')}
       });
@@ -52,6 +56,23 @@
       this.socket.on('chat', (msg)=> {
         this.msgs.push(msg);
       });
+
+      if(!localStorage.getItem('logs')){
+        localStorage.setItem('logs', {});
+      }
+
+      if(localStorage.getItem('logs')[this.current_room]){
+        this.msgs = localStorage.getItem('logs')[this.current_room]
+      }
+      else {
+        Vue.http.get('v1/logs/' + this.current_room)
+          .then(res => {
+            this.msgs = res.data.logs;
+          })
+          .catch(err => {
+            console.log(err);
+          })
+      }
     },
     methods: {
       send(temp_msg) {
@@ -78,12 +99,8 @@
   .el-table .your-word {
     background: #a0f9a0;
   }
-  /** { margin: 0; padding: 0; box-sizing: border-box; }*/
-  /*body { font: 13px Helvetica, Arial; }*/
-  form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
+
+  form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; height: 10vh}
   /*form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }*/
   /*form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }*/
-  /*#messages { list-style-type: none; margin: 0; padding: 0; }*/
-  /*#messages li { padding: 5px 10px; }*/
-  /*#messages li:nth-child(odd) { background: #eee; }*/
 </style>

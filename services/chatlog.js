@@ -185,17 +185,35 @@ var logMessage = function (roomid, userid, message) {
     }
     var msg = {u: userid, m: message, t: Date.now()};
     return Chatlog.findByIdAndUpdate(roomid, {$push: {logs: msg}})
-        .then(() => 's')
         .catch((err) => {
             console.log(err);
-            return 'f';
+            return;
         });
 };
+
+var fetchRoomLogs = function (roomid) {
+    if(typeof roomid !== 'string'){
+        return Promise.reject(new Error('wrong roomid format'));
+    }
+
+    return Chatlog.findById(roomid, {logs: true, _id: false})
+        .then(data => {
+            if(data && data.logs.length !== 0){
+                return data;
+            }
+            return {logs: []};
+        })
+        .catch(err => {
+            console.log(err);
+            return err;
+        });
+}
 
 module.exports = {
     getAllRooms,getAllRooms,
     getUser: getUser,
     logMessage: logMessage,
+    fetchRoomLogs: fetchRoomLogs,
     enterRoom: enterRoom,
-    leaveRoom: leaveRoom
+    leaveRoom: leaveRoom,
 };

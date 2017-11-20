@@ -32,6 +32,12 @@ router.post('/room', function(req, res, next) {
 
 });
 
+router.get('/logs/:roomid', function(req, res, next) {
+    return Chatlog.fetchRoomLogs(req.params.roomid)
+        .then(logs => res.json(logs))
+        .catch(err => res.json({logs: []}));
+});
+
 router.get('/user/:id', function(req, res) {
     return Chatlog.getUser(req.params.id)
         .then(data => {
@@ -46,9 +52,11 @@ router.get('/user/:id', function(req, res) {
         });
 });
 
-router.get('/test', function(req, res){
-    return Chatlog.getAllRooms();
-});
+// router.get('/test', function(req, res){
+//     return Chatlog.fetchRoomMessage('')
+//         .then(logs => res.json(logs))
+//         .catch(err => res.json({logs: null}));
+// });
 
 
 module.exports = router;
