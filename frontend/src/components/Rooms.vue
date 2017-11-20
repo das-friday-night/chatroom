@@ -6,7 +6,7 @@
           <!--<el-form-item label="new room name: ">-->
             <!--<el-input v-model="new_room_name"></el-input>-->
           <!--</el-form-item>-->
-
+          Create a new room
           <el-form-item>
             <el-button type="primary" @click="onSubmit">Submit</el-button>
           </el-form-item>
