@@ -8,7 +8,7 @@
           <!--</el-form-item>-->
           Create a new room
           <el-form-item>
-            <el-button type="primary" @click="onSubmit">Submit</el-button>
+            <el-button type="primary" @click="onSubmit">Create</el-button>
           </el-form-item>
         </el-form>
       </el-aside>

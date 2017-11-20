@@ -37,7 +37,7 @@
 
   export default {
     data() {
-      var socket = socketio('http://localhost:8080', {
+      var socket = socketio({
         query: {u: localStorage.getItem('userid'), r: localStorage.getItem('current_room')}
       });
 
