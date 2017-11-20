@@ -25,6 +25,7 @@
               localStorage.removeItem('userid');
               localStorage.removeItem('current_room');
               localStorage.removeItem('joined_rooms');
+              localStorage.removeItem('logs');
               this.$router.replace('/');
             }
             else {
