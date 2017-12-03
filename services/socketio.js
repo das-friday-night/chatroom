@@ -9,7 +9,7 @@ module.exports = function (server) {
     var rooms = {};
 
     io.on('connection', function(socket){
-        console.log(socket.id + ' connected ');
+        console.log(socket.id + ' connected +++++++++++++++');
         var info = socket.handshake.query;
         socketIdToRoom[socket.id] = info.r;
         socketIdToUserId[socket.id] = info.u;
@@ -27,12 +27,19 @@ module.exports = function (server) {
             if(rooms[roomid].size === 0) delete rooms[roomid];
             delete socketIdToRoom[socket.id];
             delete socketIdToUserId[socket.id];
-            console.log(socket.id + ' disconnect ');
+            console.log(socket.id + ' disconnect ---------------');
         });
 
         socket.on('chat', function(msg){
-            Chatlog.logMessage(socketIdToRoom[socket.id], socket.handshake.query.u, msg)
+            Chatlog.logMessage(socketIdToRoom[socket.id], info.u, msg)
                 .then(() => {broadcast('chat', msg)});
+            Chatlog.logStats({userid: info.u, action: "said", message: msg})
+                .then((data) => {io.emit('stats', data)});
+        });
+
+        socket.on('stats', function(msg){
+            Chatlog.logStats(msg)
+                .then(data => io.emit('stats', data));
         });
 
         var broadcast = function(eventName, msg){

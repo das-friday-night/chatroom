@@ -4,6 +4,7 @@ import Router from 'vue-router'
 import HelloWorld from '../components/HelloWorld'
 import ChatPanel from '../components/ChatPanel'
 import Rooms from '../components/Rooms'
+import Stats from '../components/Stats'
 
 
 Vue.use(VueResource)
@@ -33,12 +34,17 @@ export default new Router({
     },
     {
       path: '/rooms',
-      name: Rooms,
+      name: 'Rooms',
       component: Rooms,
       beforeEnter: (to, from, next) => {
         if(!localStorage.getItem('userid')) next('/');
         else next();
       }
+    },
+    {
+      path: '/stats',
+      name: 'Stats',
+      component: Stats
     }
   ]
 })

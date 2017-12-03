@@ -1,10 +1,11 @@
 var mongoose = require('mongoose');
 var uuidv4 = require('uuid/v4');
 
+mongoose.Promise = global.Promise;
 var ChatLogSchema = mongoose.Schema({
     m: String,
     u: String,
-    t: String,
+    t: Date,
 });
 
 

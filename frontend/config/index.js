@@ -10,23 +10,23 @@ module.exports = {
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
-    proxyTable: {},
-    // proxyTable: {
-    //   '/v1': {
-    //     target: 'http://localhost:8080/v1',
-    //     changeOrigin: true,
-    //     pathRewrite: {
-    //       '^/v1': ''
-    //     }
-    //   },
-    //   '/auth': {
-    //     target: 'http://localhost:8080/auth',
-    //     changeOrigin: true,
-    //     pathRewrite: {
-    //       '^/auth': ''
-    //     }
-    //   }
-    // },
+    // proxyTable: {},
+    proxyTable: {
+      '/v1': {
+        target: 'http://localhost:8080/v1',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/v1': ''
+        }
+      },
+      '/auth': {
+        target: 'http://localhost:8080/auth',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/auth': ''
+        }
+      }
+    },
 
     // Various Dev Server settings
     host: 'localhost', // can be overwritten by process.env.HOST

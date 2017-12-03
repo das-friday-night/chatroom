@@ -1,6 +1,7 @@
 // Mongoose async operations, like .save() and queries, return promises
 
 var Chatlog = require('../mongo_model/chatlog_model');
+var StatsLog = require('../mongo_model/statslog_model');
 var pgp = require('pg-promise')();
 
 const db = pgp('postgres://chatroom:chatroom@chatroom2.czmbmay6wiwj.us-west-1.rds.amazonaws.com:5432/chatroom');
@@ -49,7 +50,7 @@ var getRoom = function(roomid){
 
 var getAllRooms = function(){
     return Chatlog.find({}, '_id');
-}
+};
 
 var enterUserJoinRoom = function(roomid, userid){
     if(typeof roomid !== 'string' || typeof userid !== 'string'){
@@ -207,7 +208,44 @@ var fetchRoomLogs = function (roomid) {
             console.log(err);
             return err;
         });
-}
+};
+
+var getAllStats = function () {
+    return Promise.all([StatsLog.find(), Chatlog.count(), db.any('SELECT COUNT(*) FROM users')])
+        .then(payload => {
+            let res = {
+                logs: payload[0].length > 0 ? payload[0] : [],
+                room: payload[1],
+                user: Number(payload[2][0].count)
+            };
+            return res;
+        })
+        .catch(errs => {
+            console.log(errs);
+        });
+};
+
+var logStats = function(payload) {
+    try{
+        /**{ u: userid, act: string, m: message }*/
+        var chatlog = new StatsLog({
+            u: payload.userid,
+            act: payload.action,
+            m: payload.message
+        });
+
+        return chatlog.save()
+            .then(data => data)
+            .catch(err => {
+                console.log(err);
+                return err;
+            });
+    }
+    catch (e) {
+        return Promise.reject(new Error('wrong stats log format'));
+    }
+
+};
 
 module.exports = {
     getAllRooms,getAllRooms,
@@ -216,4 +254,6 @@ module.exports = {
     fetchRoomLogs: fetchRoomLogs,
     enterRoom: enterRoom,
     leaveRoom: leaveRoom,
+    getAllStats: getAllStats,
+    logStats: logStats,
 };

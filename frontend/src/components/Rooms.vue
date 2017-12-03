@@ -40,20 +40,23 @@
 
 <script>
   import Vue from 'vue'
+  import socketio from 'socket.io-client'
 
   export default {
     data () {
+      var socket = socketio('http://localhost:8080');
       return {
         my_rooms: [],
         all_rooms: [],
         new_room_name: '',
-        status: ''
+        status: '',
+        socket: socket
       }
     },
 
     mounted() {
       localStorage.removeItem('current_room');
-      Vue.http.get('/v1/user/'+localStorage.getItem('userid'))
+      Vue.http.get('/v1/rooms/'+localStorage.getItem('userid'))
         .then(res => {
           if(res.data) {
             this.my_rooms = res.data.join_rooms;
@@ -88,6 +91,11 @@
               if(localStorage.getItem('current_room') === roomid){
                 localStorage.removeItem('current_room');
               }
+              this.socket.emit('stats', {
+                userid: localStorage.getItem('userid'),
+                action: 'leave room',
+                message: roomid
+              });
             }
             else {
               this.status = 'leave room failed';
@@ -101,6 +109,11 @@
             if(res.body.roomid){
               this.my_rooms.push(res.body.roomid);
               localStorage.setItem('joined_rooms', this.my_rooms);
+              this.socket.emit('stats', {
+                userid: localStorage.getItem('userid'),
+                action: 'join room',
+                message: roomid
+              });
             }
             else {
               this.status = 'join new room failed';
@@ -115,6 +128,11 @@
               this.my_rooms.push(res.body.roomid);
               this.all_rooms.push(res.body.roomid);
               localStorage.setItem('joined_rooms', this.my_rooms);
+              this.socket.emit('stats', {
+                userid: localStorage.getItem('userid'),
+                action: 'create a new room',
+                message: res.body.roomid
+              });
             }
             else {
               this.status = 'enter new room failed';
