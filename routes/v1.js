@@ -54,7 +54,8 @@ router.get('/logs/:roomid', function(req, res) {
         .catch(err => res.json({logs: []}));
 });
 
-
+// get all stats(logs, number of rooms, number of user)
+// about the application
 router.get('/stats', function(req, res) {
     return Chatlog.getAllStats()
         .then(data => res.status(200).json(data))
@@ -83,5 +84,10 @@ router.get('/stats', function(req, res) {
 //         .then(data => res.json(data))
 //         .catch(err => res.json({logs: null}));
 // });
+
+router.post('/test', function(req, res){
+    console.log(req.body);
+    return res.send('success');
+});
 
 module.exports = router;

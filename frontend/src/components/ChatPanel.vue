@@ -20,14 +20,43 @@
 
     <el-row :gutter="20">
       <form ref="form" id="fix-form" v-on:submit.prevent="send(temp_msg)">
-        <el-col :span="22">
+        <el-col :span="20">
           <el-input v-model="temp_msg"></el-input>
         </el-col>
         <el-col :span="2">
           <el-button @click="send(temp_msg)" round>Send</el-button>
         </el-col>
+        <el-col :span="2">
+          <el-button @click="dialog_visible = true" round><i class="el-icon-picture-outline"></i></el-button>
+        </el-col>
       </form>
     </el-row>
+
+    <!--upload image-->
+    <el-dialog
+      :visible.sync="dialog_visible"
+      width="35%">
+      <el-upload
+        class="upload-demo"
+        drag
+        action=""
+        accept="image/jpeg"
+        :auto-upload="false"
+        :limit="max_file_amount"
+        :on-remove="handleRemove"
+        :on-exceed="handleExceed"
+        :file-list="file_list"
+        list-type="picture">
+        <i class="el-icon-upload"></i>
+        <div class="el-upload__text">Drop image here or <em>click to upload</em></div>
+        <div class="el-upload__tip" slot="tip">jpg files with a size less than 2MB</div>
+      </el-upload>
+
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialog_visible = false">Cancel</el-button>
+        <el-button type="primary" @click="">Confirm</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -49,7 +78,10 @@
         socket: socket,
         current_room: localStorage.getItem('current_room'),
         msgs: [],
-        temp_msg: ''
+        temp_msg: '',
+        dialog_visible: false,
+        file_list: [],
+        max_file_amount: 1,
       };
     },
     created() {
@@ -90,6 +122,34 @@
       goRooms() {
         this.socket.close();
         this.$router.replace('/rooms');
+      },
+
+      handleRemove(file, file_list) {
+        console.log(file);
+      },
+
+      handleExceed() {
+        this.$message.warning(`Only upload file ${this.maxFileAmount} at a time`);
+      },
+
+      beforeUpload(file){
+        const isJPG = file.type === 'image/jpeg';
+        const isLt2M = file.size / 1024 / 1024 < 2;
+
+        if (!isJPG) {
+          this.$message.error('picture must be JPG format!');
+        }
+        if (!isLt2M) {
+          this.$message.error('picture size can not exceed 2MB!');
+        }
+        return isJPG && isLt2M;
+      },
+
+      upload(){
+        if(beforeUpload(this.file_list[0])){
+
+          this.dialog_visible = false;
+        }
       }
     }
   }
