@@ -85,8 +85,30 @@ router.get('/stats', function(req, res) {
 //         .catch(err => res.json({logs: null}));
 // });
 
-router.post('/test', function(req, res){
-    console.log(req.body);
+var multer  = require('multer');
+var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, './tmp')
+    },
+    filename: function (req, file, cb) {
+        console.log(file);
+        cb(null, file.fieldname + '-' + Date.now())
+    }
+})
+
+var upload = multer({ 
+    storage: storage,
+    fileFilter: function (req, file, cb) {
+        // accept image only
+        if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+            return cb(new Error('Only image files are allowed!'), false);
+        }
+        cb(null, true);
+    }
+});
+
+router.post('/test', upload.single('uploadimg'), function(req, res){
+    console.log(req.file);
     return res.send('success');
 });
 

@@ -37,16 +37,22 @@
       :visible.sync="dialog_visible"
       width="35%">
       <el-upload
-        class="upload-demo"
         drag
-        action=""
-        accept="image/jpeg"
-        :auto-upload="false"
+        class="upload-demo"
+        ref="upload"
+        action="/v1/test"
+        accept="image/*"
+        list-type="picture"
+        name="uploadimg"
         :limit="max_file_amount"
+        :file-list="file_list"
         :on-remove="handleRemove"
         :on-exceed="handleExceed"
-        :file-list="file_list"
-        list-type="picture">
+        :on-success="handleSuccess"
+        :on-error="handleError"
+        :before-upload="beforeUpload"
+        :auto-upload="false"
+        :with-credentials="true">
         <i class="el-icon-upload"></i>
         <div class="el-upload__text">Drop image here or <em>click to upload</em></div>
         <div class="el-upload__tip" slot="tip">jpg files with a size less than 2MB</div>
@@ -54,7 +60,7 @@
 
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialog_visible = false">Cancel</el-button>
-        <el-button type="primary" @click="">Confirm</el-button>
+        <el-button type="primary" @click="upload">Confirm</el-button>
       </span>
     </el-dialog>
   </div>
@@ -132,6 +138,14 @@
         this.$message.warning(`Only upload file ${this.maxFileAmount} at a time`);
       },
 
+      handleSuccess() {
+        this.$message.success('Upload success');
+      },
+
+      handleError(err, file, fileList){
+        console.log(err);
+      },
+
       beforeUpload(file){
         const isJPG = file.type === 'image/jpeg';
         const isLt2M = file.size / 1024 / 1024 < 2;
@@ -146,10 +160,8 @@
       },
 
       upload(){
-        if(beforeUpload(this.file_list[0])){
-
-          this.dialog_visible = false;
-        }
+        this.dialog_visible = false;
+        this.$refs.upload.submit();
       }
     }
   }
