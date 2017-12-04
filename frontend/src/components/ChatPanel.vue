@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-row>
-      <el-col :span="22">
+      <el-col :span="21">
         <h4 style="text-align: left;">
           <i class="el-icon-star-on"></i> {{current_room}} <i class="el-icon-star-on"></i>
         </h4>
@@ -15,7 +15,12 @@
 
     <el-table :data="msgs" style="width: 100%" :row-class-name="tableRowClassName">
       <el-table-column prop="u" width="180"></el-table-column>
-      <el-table-column prop="m"></el-table-column>
+      <el-table-column>
+        <template slot-scope="scope">
+          <img v-if="isImage(scope.row.m)" :src="scope.row.m" class="chat-img"/>
+          <div v-else>{{scope.row.m}}</div>
+        </template>
+      </el-table-column>
     </el-table>
 
     <el-row :gutter="20">
@@ -41,7 +46,7 @@
         class="upload-demo"
         ref="upload"
         action="/v1/test"
-        accept="image/*"
+        accept="image/jpeg"
         list-type="picture"
         name="uploadimg"
         :limit="max_file_amount"
@@ -50,6 +55,7 @@
         :on-exceed="handleExceed"
         :on-success="handleSuccess"
         :on-error="handleError"
+        :on-change="handleChange"
         :before-upload="beforeUpload"
         :auto-upload="false"
         :with-credentials="true">
@@ -69,13 +75,14 @@
 <script>
   import socketio from 'socket.io-client'
   import Vue from 'vue'
+  import uuid from 'uuid/v4'
 
   export default {
     data() {
       var socket = socketio('http://localhost:8080', {
         query: {u: localStorage.getItem('userid'), r: localStorage.getItem('current_room')}
       });
-//
+
 //      var socket = socketio({
 //        query: {u: localStorage.getItem('userid'), r: localStorage.getItem('current_room')}
 //      });
@@ -88,6 +95,7 @@
         dialog_visible: false,
         file_list: [],
         max_file_amount: 1,
+        url: 'https://chat-room-image.s3.us-west-1.amazonaws.com'
       };
     },
     created() {
@@ -113,6 +121,10 @@
       }
     },
     methods: {
+      isImage(msg){
+        return msg.indexOf(this.url) !== -1;
+      },
+
       send(temp_msg) {
         this.socket.emit('chat', temp_msg);
         this.temp_msg = '';
@@ -138,12 +150,34 @@
         this.$message.warning(`Only upload file ${this.maxFileAmount} at a time`);
       },
 
-      handleSuccess() {
+      handleSuccess(response) {
         this.$message.success('Upload success');
+        this.socket.emit('chat', response.url);
+//        this.socket.emit('stats', {
+//          userid: localStorage.getItem('userid'),
+//          action: 'post image',
+//          message: response.url
+//        });
       },
 
       handleError(err, file, fileList){
         console.log(err);
+      },
+
+      handleChange(file, fileList) {
+        const isJPG = file.raw.type === 'image/jpeg';
+        const isLt2M = file.size / 1024 / 1024 < 2;
+
+        if (!isJPG) {
+          this.$message.error('picture must be JPG format!');
+        }
+        if (!isLt2M) {
+          this.$message.error('picture size can not exceed 2MB!');
+        }
+
+        if(!isJPG || !isLt2M){
+          fileList = [];
+        }
       },
 
       beforeUpload(file){
@@ -175,4 +209,8 @@
   form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; height: 10vh}
   /*form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }*/
   /*form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }*/
+
+  .chat-img {
+    width: 150px;
+  }
 </style>

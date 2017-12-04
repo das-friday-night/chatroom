@@ -1,7 +1,7 @@
 #A simple chat app using following tools:
 1.vue+element_ui+webpack
 
-2.node+express
+2.node+express+multer
 
 3.socket.io
 

@@ -1,6 +1,7 @@
 <template>
   <el-container>
     <el-aside width="200px">
+      <el-button type="success" @click="goRooms" round>Go Back</el-button>
       <div>Existed room: {{rooms_amount}}</div>
       <div>Existed user: {{user_amount}}</div>
     </el-aside>
@@ -54,6 +55,11 @@
       });
     },
     methods: {
+      goRooms() {
+        this.socket.close();
+        this.$router.replace('/rooms');
+      },
+
       setData (data) {
         data.logs.forEach(log => {
           let date = new Date(log.t);

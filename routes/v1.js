@@ -62,7 +62,6 @@ router.get('/stats', function(req, res) {
         .catch((err) => next(err));
 });
 
-
 // router.post('/stats', function(req, res, next){
 //     /**{
 //     *   t: time,
@@ -79,37 +78,13 @@ router.get('/stats', function(req, res) {
 //         .catch((err) => next(err));
 // });
 
-// router.get('/test', function(req, res){
-//     return Chatlog.getAllStats()
-//         .then(data => res.json(data))
-//         .catch(err => res.json({logs: null}));
+
+// router.post('/test', upload, function(req, res){
+//     console.log(req.file);
+//     return res.send('success');
 // });
 
-var multer  = require('multer');
-var storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, './tmp')
-    },
-    filename: function (req, file, cb) {
-        console.log(file);
-        cb(null, file.fieldname + '-' + Date.now())
-    }
-})
-
-var upload = multer({ 
-    storage: storage,
-    fileFilter: function (req, file, cb) {
-        // accept image only
-        if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
-            return cb(new Error('Only image files are allowed!'), false);
-        }
-        cb(null, true);
-    }
-});
-
-router.post('/test', upload.single('uploadimg'), function(req, res){
-    console.log(req.file);
-    return res.send('success');
-});
+var s3 = require('../services/s3');
+router.post('/test', s3.uploadImage);
 
 module.exports = router;
