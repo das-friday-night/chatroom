@@ -13,9 +13,9 @@ router.get('/rooms/:userid', function(req, res) {
                     .then(rooms => {
                         return res.json({allrooms: rooms, join_rooms: data.join_room});
                     })
-                    .catch(() => res.json(null));
+                    .catch(() => res.status(400).json(null));
             }
-            else res.send(null);
+            else res.status(400).send(null);
         });
 });
 
@@ -37,13 +37,13 @@ router.post('/room', function(req, res) {
     if(req.body.action === 'enter'){
         return Chatlog.enterRoom(req.body.roomid, req.body.userid)
             .then(roomid => res.json({roomid: roomid}))
-            .catch(err => res.json({roomid: null}));
+            .catch(err => res.status(400).json({roomid: null}));
     }
 
     if(req.body.action === 'leave'){
         return Chatlog.leaveRoom(req.body.roomid, req.body.userid)
             .then(roomid => res.json({roomid: roomid}))
-            .catch(err => res.json({roomid: null}));
+            .catch(err => res.status(400).json({roomid: null}));
     }
 
 });
@@ -52,7 +52,7 @@ router.post('/room', function(req, res) {
 router.get('/logs/:roomid', function(req, res) {
     return Chatlog.fetchRoomLogs(req.params.roomid)
         .then(logs => res.json(logs))
-        .catch(err => res.json({logs: []}));
+        .catch(err => res.status(400).send(err));
 });
 
 // get all stats(logs, number of rooms, number of user)
@@ -64,7 +64,7 @@ router.get('/stats', function(req, res) {
 });
 
 // upload image to s3
-router.post('/test', S3.uploadImage);
+router.post('/image', S3.uploadImage);
 
 // router.post('/stats', function(req, res, next){
 //     /**{

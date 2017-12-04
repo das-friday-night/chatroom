@@ -41,13 +41,12 @@
 
   export default {
     data () {
-//      var socket = socketio('http://localhost:8080');
+      // var socket = socketio('http://localhost:8080');
       var socket = socketio();
 
       return {
         my_rooms: [],
         all_rooms: [],
-        status: '',
         socket: socket
       }
     },
@@ -105,7 +104,7 @@
               });
             }
             else {
-              this.status = 'leave room failed';
+              this.$message.error('leave room failed');
               this.socket.emit('stats', {
                 userid: localStorage.getItem('userid'),
                 action: 'leave room',
@@ -113,6 +112,14 @@
               });
             }
           })
+          .catch(err => {
+            this.$message.error('leave room failed');
+            this.socket.emit('stats', {
+              userid: localStorage.getItem('userid'),
+              action: 'leave room',
+              message: 'failed'
+            });
+          });
       },
 
       join(roomid) {
@@ -129,13 +136,21 @@
               });
             }
             else {
-              this.status = 'join room failed';
+              this.$message.error('join room failed');
               this.socket.emit('stats', {
                 userid: localStorage.getItem('userid'),
                 action: 'join room',
                 message: 'failed'
               });
             }
+          })
+          .catch(err => {
+            this.$message.error('join room failed');
+            this.socket.emit('stats', {
+              userid: localStorage.getItem('userid'),
+              action: 'join room',
+              message: 'failed'
+            });
           })
       },
 
@@ -154,13 +169,21 @@
               });
             }
             else {
-              this.status = 'enter new room failed';
+              this.$message.error('enter new room failed');
               this.socket.emit('stats', {
                 userid: localStorage.getItem('userid'),
                 action: 'enter new room',
                 message: 'failed'
               });
             }
+          })
+          .catch(err => {
+            this.$message.error('enter new room failed');
+            this.socket.emit('stats', {
+              userid: localStorage.getItem('userid'),
+              action: 'enter new room',
+              message: 'failed'
+            });
           });
       },
     }

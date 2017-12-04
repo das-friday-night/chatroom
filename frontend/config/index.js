@@ -26,7 +26,7 @@ module.exports = {
     //       '^/auth': ''
     //     }
     //   }
-    // },
+    },
 
     // Various Dev Server settings
     host: 'localhost', // can be overwritten by process.env.HOST

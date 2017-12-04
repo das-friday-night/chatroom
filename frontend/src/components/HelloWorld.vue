@@ -27,7 +27,7 @@
 
   export default {
     data() {
-//      var socket = socketio('http://localhost:8080');
+      // var socket = socketio('http://localhost:8080');
       var socket = socketio();
 
       return {
@@ -61,6 +61,7 @@
             }
           })
           .catch(err => {
+            console.log(err);
             this.status = err.message;
           });
 

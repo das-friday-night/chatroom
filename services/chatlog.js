@@ -33,9 +33,6 @@ var getUser = function(userid){
         values: [userid]
     }).then(data => {
         return data.length === 0 ? null : data[0];
-    }).catch(err => {
-        console.log(err);
-        return err;
     });
 };
 

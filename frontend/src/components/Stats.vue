@@ -22,7 +22,7 @@
 
   export default {
     data() {
-//      var socket = socketio('http://localhost:8080');
+      // var socket = socketio('http://localhost:8080');
       var socket = socketio();
 
       return {
