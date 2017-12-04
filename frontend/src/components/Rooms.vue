@@ -3,9 +3,6 @@
     <el-container>
       <el-aside width="200px">
         <el-form ref="form">
-          <!--<el-form-item label="new room name: ">-->
-            <!--<el-input v-model="new_room_name"></el-input>-->
-          <!--</el-form-item>-->
           Create a new room
           <el-form-item>
             <el-button type="primary" @click="onSubmit">Create</el-button>
@@ -50,7 +47,6 @@
       return {
         my_rooms: [],
         all_rooms: [],
-        new_room_name: '',
         status: '',
         socket: socket
       }
@@ -77,6 +73,7 @@
     methods: {
       enter(roomid) {
         localStorage.setItem('current_room',roomid);
+        this.socket.close();
         this.$router.replace('/chat');
       },
 
@@ -84,15 +81,23 @@
         Vue.http.post('/v1/room', {action: 'leave', roomid: roomid, userid: localStorage.getItem('userid')})
           .then(res => {
             if(res.body.roomid){
-              var index = this.all_rooms.indexOf(roomid);
-              this.all_rooms.splice(index,1);
-              if(res.body.roomid === 'room deleted'){
-                index = this.my_rooms.indexOf(roomid);
-                this.all_rooms.splice(index,1);
-              }
+              // delete room from rooms that I joined
+              var index = this.my_rooms.indexOf(roomid);
+              this.my_rooms.splice(index,1);
+              localStorage.setItem('joined_rooms', this.my_rooms);
+
+              // if this is the room I have entered recently, remove it from localStorage
               if(localStorage.getItem('current_room') === roomid){
                 localStorage.removeItem('current_room');
               }
+
+              // if I am the last one in room, room is deleted after my leave.
+              if(res.body.roomid === 'room deleted'){
+                // delete room from all rooms
+                index = this.all_rooms.indexOf(roomid);
+                this.all_rooms.splice(index,1);
+              }
+
               this.socket.emit('stats', {
                 userid: localStorage.getItem('userid'),
                 action: 'leave room',
@@ -101,6 +106,11 @@
             }
             else {
               this.status = 'leave room failed';
+              this.socket.emit('stats', {
+                userid: localStorage.getItem('userid'),
+                action: 'leave room',
+                message: 'failed'
+              });
             }
           })
       },
@@ -111,6 +121,7 @@
             if(res.body.roomid){
               this.my_rooms.push(res.body.roomid);
               localStorage.setItem('joined_rooms', this.my_rooms);
+
               this.socket.emit('stats', {
                 userid: localStorage.getItem('userid'),
                 action: 'join room',
@@ -118,7 +129,12 @@
               });
             }
             else {
-              this.status = 'join new room failed';
+              this.status = 'join room failed';
+              this.socket.emit('stats', {
+                userid: localStorage.getItem('userid'),
+                action: 'join room',
+                message: 'failed'
+              });
             }
           })
       },
@@ -130,6 +146,7 @@
               this.my_rooms.push(res.body.roomid);
               this.all_rooms.push(res.body.roomid);
               localStorage.setItem('joined_rooms', this.my_rooms);
+
               this.socket.emit('stats', {
                 userid: localStorage.getItem('userid'),
                 action: 'create a new room',
@@ -138,6 +155,11 @@
             }
             else {
               this.status = 'enter new room failed';
+              this.socket.emit('stats', {
+                userid: localStorage.getItem('userid'),
+                action: 'enter new room',
+                message: 'failed'
+              });
             }
           });
       },

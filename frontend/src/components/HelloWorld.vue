@@ -23,10 +23,15 @@
 
 <script>
   import Vue from 'vue'
+  import socketio from 'socket.io-client'
 
   export default {
     data() {
+//      var socket = socketio('http://localhost:8080');
+      var socket = socketio();
+
       return {
+        socket: socket,
         status: '',
         form: {
           username: '',
@@ -41,11 +46,22 @@
             if(res.body === 'login success'){
               this.status = 'login success';
               localStorage.setItem('userid', this.form.username);
+
+              this.socket.emit('stats', {
+                userid: this.form.username,
+                action: 'login',
+                message: ''
+              });
+              this.socket.close();
+
               this.$router.replace('/rooms');
             }
             else {
               this.status = res.body;
             }
+          })
+          .catch(err => {
+            this.status = err.message;
           });
 
       }

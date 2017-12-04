@@ -6,7 +6,6 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongoose = require("mongoose");
-var uuidv4 = require('uuid/v4');
 
 var index = require('./routes/index');
 var logic = require('./routes/v1');
@@ -15,7 +14,7 @@ var auth = require('./routes/auth');
 var app = express();
 
 app.use(session({
-    secret: uuidv4(),
+    secret: 'Peter Piper picked a peck of pickled peppers',
     resave: false,
     saveUninitialized: true
 }));
@@ -43,7 +42,7 @@ var authchecker = function(req, res, next){
 
 
 app.use('/', index);
-app.use('/v1', logic);
+app.use('/v1', authchecker, logic);
 app.use('/auth', auth);
 
 

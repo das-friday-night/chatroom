@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-row>
-      <el-col :span="21">
+      <el-col :span="22">
         <h4 style="text-align: left;">
           <i class="el-icon-star-on"></i> {{current_room}} <i class="el-icon-star-on"></i>
         </h4>
@@ -153,11 +153,6 @@
       handleSuccess(response) {
         this.$message.success('Upload success');
         this.socket.emit('chat', response.url);
-//        this.socket.emit('stats', {
-//          userid: localStorage.getItem('userid'),
-//          action: 'post image',
-//          message: response.url
-//        });
       },
 
       handleError(err, file, fileList){
@@ -211,6 +206,6 @@
   /*form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }*/
 
   .chat-img {
-    width: 150px;
+    width: 250px;
   }
 </style>

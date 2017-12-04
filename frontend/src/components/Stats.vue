@@ -24,6 +24,7 @@
     data() {
 //      var socket = socketio('http://localhost:8080');
       var socket = socketio();
+
       return {
         rooms_amount: 0,
         user_amount: 0,

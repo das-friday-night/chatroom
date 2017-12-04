@@ -10,3 +10,5 @@
 5.postgresql(AWS RDS)
 
 6.AWS EC2
+
+7.AWS S3

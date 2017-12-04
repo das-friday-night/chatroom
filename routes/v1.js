@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 var Chatlog = require('../services/chatlog');
+var S3 = require('../services/s3');
 
 // get all exist rooms and rooms that a user joined
 router.get('/rooms/:userid', function(req, res) {
@@ -62,6 +63,9 @@ router.get('/stats', function(req, res) {
         .catch((err) => next(err));
 });
 
+// upload image to s3
+router.post('/test', S3.uploadImage);
+
 // router.post('/stats', function(req, res, next){
 //     /**{
 //     *   t: time,
@@ -83,8 +87,5 @@ router.get('/stats', function(req, res) {
 //     console.log(req.file);
 //     return res.send('success');
 // });
-
-var s3 = require('../services/s3');
-router.post('/test', s3.uploadImage);
 
 module.exports = router;
