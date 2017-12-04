@@ -19,6 +19,7 @@ var upload = multer({
             cb(null, {fieldName: file.fieldname});
         },
         key: function (req, file, cb) {
+            // todo conflict key occurs when two same name file uploaded on the same time
             cb(null, file.fieldname + '_' + Date.now().toString())
         }
     })

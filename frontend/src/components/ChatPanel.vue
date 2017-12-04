@@ -79,13 +79,13 @@
 
   export default {
     data() {
-      var socket = socketio('http://localhost:8080', {
-        query: {u: localStorage.getItem('userid'), r: localStorage.getItem('current_room')}
-      });
-
-//      var socket = socketio({
+//      var socket = socketio('http://localhost:8080', {
 //        query: {u: localStorage.getItem('userid'), r: localStorage.getItem('current_room')}
 //      });
+
+      var socket = socketio({
+        query: {u: localStorage.getItem('userid'), r: localStorage.getItem('current_room')}
+      });
 
       return {
         socket: socket,
