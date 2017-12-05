@@ -49,6 +49,8 @@ var getAllRooms = function(){
     return Chatlog.find({}, '_id');
 };
 
+// 'user join room' is the 'join_room' field in sql database
+// it records all the rooms that user has entered.
 var enterUserJoinRoom = function(roomid, userid){
     if(typeof roomid !== 'string' || typeof userid !== 'string'){
         return Promise.reject(new Error('wrong roomid or userid'));
@@ -64,6 +66,8 @@ var enterUserJoinRoom = function(roomid, userid){
     });
 };
 
+// 'chat room' is the 'users' field of every room document, mongodb database.
+// users field records all the user in this room.
 var enterChatRoom = function(roomid, userid){
     if(typeof roomid !== 'string' || typeof userid !== 'string'){
         return Promise.reject(new Error('wrong roomid or userid'));
@@ -136,6 +140,7 @@ var leaveChatRoom = function (roomid, userid) {
              * null if the query does not match a document;
              */
             if(room && room.users.indexOf(userid) !== -1){
+                // if this user is the last member in this room, delete this room
                 if(room.users.length === 1) return Chatlog.deleteOne({_id: roomid}).then(()=>'room deleted');
                 else return roomid;
             }
