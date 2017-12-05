@@ -25,7 +25,7 @@ var upload = multer({
     })
 }).single('uploadimg');
 
-// // create a bucket, only needed once
+// // ** create a bucket, only needed once **
 // s3.createBucket({Bucket: 'chat-room-image'}, function(err, data){
 //     if(err) console.log(err);
 //     console.log(data);

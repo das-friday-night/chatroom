@@ -31,8 +31,13 @@ module.exports = function (server) {
         });
 
         socket.on('chat', function(msg){
+            // log conversation to mongodb(chatrooms collection)
+            // broadcast to the rest user in room
             Chatlog.logMessage(socketIdToRoom[socket.id], info.u, msg)
                 .then(() => {broadcast('chat', msg)});
+
+            // log stats to mongodb(statslog collection)
+            // broadcast to rest of user who is listening to the 'stats' event
             Chatlog.logStats({userid: info.u, action: "said", message: msg})
                 .then((data) => {io.emit('stats', data)});
         });

@@ -227,6 +227,7 @@ var getAllStats = function () {
         });
 };
 
+// log stats to mongodb(statslog collection)
 var logStats = function(payload) {
     try{
         /**{ u: userid, act: string, m: message }*/
